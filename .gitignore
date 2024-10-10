@@ -1,0 +1,6 @@
+data/all_fasta
+__pycache__
+.vscode
+cm_builder_storage*
+test_space
+all_cms
