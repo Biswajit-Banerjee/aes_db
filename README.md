@@ -20,7 +20,7 @@ Both of these tools typically come with the `Infernal` and `HMMER` software pack
 - Extract The gapped anchor sequence from MSA
 - Extract BasePairs using FR3D API call. [FR3D for 3Q1Q chain B](https://rnacentral.org/api/internal/proxy?url=http://rna.bgsu.edu/rna3dhub/rest/getChainSequenceBasePairs?pdb_id=3q1q&chain=B&only_nested=True)
 - Map the Base pairs and AES definitions from Anchor Index to MSA index
-- Break The AES with respect to AES definition
+- Break The MSA with respect to AES definition
 - Convert the AES level MSA to Stockholm with Secondary Structure derived from FR3D
 
 ## Building a Covariance Model
