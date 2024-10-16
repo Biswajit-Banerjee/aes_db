@@ -5,8 +5,9 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from Bio import SeqIO
 from .utils import log, modify_extension
 from .msa_breaker import process_aes_df, break_msa, write_stockholm, write_fasta
-from .cm_builder import run_cmbuild, convert_json_to_dotbracket, create_mapping, extract_base_pairs, colocate_basepairs_in_aes
+from .cm_builder import run_cmbuild, convert_json_to_dotbracket, create_mapping, extract_base_pairs, colocate_basepairs_in_aes, run_hmmbuild
 from .config import Config
+from .config import Binaries as bins
 from .run_ipknot import run_ipknot
 from .show_ss import show_stockholm
 from tqdm.auto import tqdm
@@ -57,12 +58,18 @@ def process_single_msa(msa_data):
 
     log(f"Constructing covariance model for {len(all_files)} AESs, please wait...")
     for sto_path in all_files: 
-        cm_path = run_cmbuild(sto_path)
-    
-        if cm_path:
-            log(f"CM file created: {cm_path}")
-        else:
+        cm_path  = run_cmbuild(sto_path)
+        hmm_path = run_hmmbuild(sto_path)
+        cm2_path = run_cmbuild(sto_path, bins.INF_115, postfix="115")
+        
+        if cm_path and hmm_path:
+            log(f"CM & HMM created: {cm_path}")
+        elif cm_path:
+            log(f"Failed to create HMM file for {sto_path}", "error")
+        elif hmm_path:
             log(f"Failed to create CM file for {sto_path}", "error")
+        else:
+            log(f"Failed to create CM & HMM file for {sto_path}", "error")
 
 
 def process_single_msa_using_ipknot(msa_data):

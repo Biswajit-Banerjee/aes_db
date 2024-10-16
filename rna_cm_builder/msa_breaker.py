@@ -63,7 +63,15 @@ def mask_ranges(aes_range, masks):
     
     return new_aes_range
 
-def process_aes_df(aes_csv_path, mapping):
+def rotate_aes(aes_list, order):
+    
+    for _ in range(order):
+        last = aes_list.pop()
+        aes_list.insert(0, last)
+        
+    return aes_list
+
+def process_aes_df(aes_csv_path, mapping, augment=False):
     aes_df = pd.read_csv(aes_csv_path, header=None, names=["aes", "middle", "ranges"])
     
     if "mask" in aes_df["aes"].tolist():
@@ -82,6 +90,16 @@ def process_aes_df(aes_csv_path, mapping):
         aes_df = aes_df_exploded.groupby("aes").agg({"ranges": 'sum'}).reset_index()
     
     aes_mapping = aes_df.set_index("aes")["ranges"].to_dict()
+    
+    if augment:
+        augmented_mapping = {}
+        for k, v in aes_mapping.items(): 
+            augmented_mapping[f"{k}_0"] = v
+            for order in range(1, len(v)):
+                augmented_mapping[f"{k}_{order}"] = rotate_aes(v[:], order)
+        
+        aes_mapping = augmented_mapping
+        
     return aes_mapping
 
 
