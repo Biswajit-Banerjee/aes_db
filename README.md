@@ -1,4 +1,4 @@
-# 🧬 Guide: Ribosome Building Blocks analysis
+# 💀 Guide: Ribosome Building Blocks analysis
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Infernal](https://img.shields.io/badge/Infernal-1.1.5-blue)](http://eddylab.org/infernal/)
@@ -51,7 +51,7 @@ To build your models, you'll need the following inputs:
 
 ## 🏗 Building Models
 
-### Covariance Models (CMs)
+### 🔵 Covariance Models (CMs)
 
 To build a Covariance Model from your input alignment:
 
@@ -61,7 +61,7 @@ cmbuild -F <output/cm_file_path> <input/stockholm_file_path>
 
 > **Note**: The `cmbuild` binary can be found in the `src/` directory of the program base directory. We only use the `-F` flag.
 
-### Hidden Markov Models (HMMs)
+### 🔴 Hidden Markov Models (HMMs)
 
 To build a Hidden Markov Model from your input alignment:
 
@@ -83,7 +83,7 @@ cmcompare <input/cm1_file_path> <input/cm2_file_path>
 
 > **Note**: Comparing cm1 to cm2 and cm2 to cm1 are different. They are not associative (A . B != B . A).
 
-## 🤝 Contributing
+## 🎃 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
