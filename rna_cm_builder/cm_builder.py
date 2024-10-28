@@ -3,7 +3,7 @@ import os
 from .utils import log, modify_extension
 from .config import Binaries as bins
 
-def run_cmbuild(sto_path, inf_path=bins.INF_102, postfix=""):
+def run_cmbuild(sto_path, postfix=""):
     """
     Run the cmbuild tool on a stockholm file.
     
@@ -11,7 +11,7 @@ def run_cmbuild(sto_path, inf_path=bins.INF_102, postfix=""):
 
     Args:
         sto_path (str): The path to the Stockholm file.
-        inf_path (str, optional): Path to infernal. Defaults to bins.INF_102.
+        inf_path (str, optional): Path to infernal. 
         postfix (str, optional): Postfix to append to the output directory name. Defaults to "".
 
     Returns:
@@ -19,7 +19,7 @@ def run_cmbuild(sto_path, inf_path=bins.INF_102, postfix=""):
     """
     cm_path = modify_extension(sto_path, "cm").replace("stockholms", "covariance_models" + postfix)    
     os.makedirs(os.path.split(cm_path)[0], exist_ok=True)
-    result = subprocess.run([inf_path / "src/cmbuild", "-F", cm_path, sto_path], 
+    result = subprocess.run([bins.INF_115 / "src/cmbuild", "-F", cm_path, sto_path], 
                             capture_output=True, text=True)
     
     if result.returncode != 0:
@@ -29,7 +29,7 @@ def run_cmbuild(sto_path, inf_path=bins.INF_102, postfix=""):
     
     return cm_path
 
-def run_hmmbuild(sto_path):
+def run_cm_convert(cm_path, flag="--mlhmm"):
     """
     Run the hmmbuild tool on a stockholm file.
     
@@ -40,17 +40,29 @@ def run_hmmbuild(sto_path):
     Returns:
         str: The path to the generated hmmbuild file if successful, None otherwise.
     """
+    if flag == "--mlhmm":
+        file_path = modify_extension(cm_path, "hmm").replace("covariance_models", "hmm_profiles")  
+    elif flag == "-1":
+        file_path = modify_extension(cm_path, "cm").replace("covariance_models", "cm_1p0p2")  
+    else:
+        raise Exception("Not implemented Yet!")
     
-    hmmm_path = modify_extension(sto_path, "hmm").replace("stockholms", "hmm_profiles")    
-    os.makedirs(os.path.split(hmmm_path)[0], exist_ok=True)
-    result = subprocess.run([bins.HMM_BUILD, hmmm_path, sto_path], 
-                            capture_output=True, text=True)
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    
+    command = [str(bins.CM_CONVERT), flag, cm_path]
+    result = subprocess.run(
+        command, 
+        capture_output=True, text=True
+    )
     
     if result.returncode != 0:
-        log(f"Error running hmmbuild for {sto_path}, see below for more details", "error")
-        print(result.stderr)
+        log(f"Error running hmmbuild for {cm_path}, see below for more details", "error")
+        print(result, "\n", " ".join(command))
         return None
-    return hmmm_path
+    else:
+        with open(file_path, 'w') as f:
+            f.writelines(result.stdout)
+    return file_path
     
 
 def extract_base_pairs(bp_json, index_mapping=None):

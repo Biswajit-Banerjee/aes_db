@@ -146,11 +146,17 @@ def break_msa(fasta_path, aes_mapping, aes_bp_mapping):
                 # current_dot_bracket += dot_bracket[int(start):int(stop)+1]
                 
             new_record = SeqRecord(sequence_records, id=new_id, description="")
+            
+            # CMBUILd won't work if the entire sequence is filled with gaps
+            # this check is just to remove that
+            if len(sequence_records) == sequence_records.count("-"):
+                continue
+            
             modified_records.append(new_record)
+                
         
         current_dot_bracket = create_dot_bracket(aes_bp_mapping[aes_name], len(sequence_records))
         # current_dot_bracket = remove_inter_aes_bonds(current_dot_bracket)
-        
         aes_records[aes_name] = [modified_records, current_dot_bracket]
     
     return aes_records

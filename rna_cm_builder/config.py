@@ -20,11 +20,13 @@ class Binaries:
     CM_COMPARE = BASE_DIR / "cmcompare"
     IP_KNOT    = BASE_DIR / "ipknot"
     
+    
     '''The below is getting used only for CMCOMPARE as it requires older Covariance model version'''
     INF_102 = Path("/home/sumon/repos/infernal-1.0.2")
     
     '''The below is  '''
     INF_115 = Path("/home/sumon/repos/rna/infernal-1.1.5")
+    CM_CONVERT = INF_115 / "src/cmconvert"
     
     HMMER = Path("/home/sumon/repos/rna/hmmer-3.4/src")
     HMM_BUILD  = HMMER / "hmmbuild"

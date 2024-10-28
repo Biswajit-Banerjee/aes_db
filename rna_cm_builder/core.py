@@ -5,7 +5,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from Bio import SeqIO
 from .utils import log, modify_extension
 from .msa_breaker import process_aes_df, break_msa, write_stockholm, write_fasta
-from .cm_builder import run_cmbuild, convert_json_to_dotbracket, create_mapping, extract_base_pairs, colocate_basepairs_in_aes, run_hmmbuild
+from .cm_builder import run_cmbuild, convert_json_to_dotbracket, create_mapping, extract_base_pairs, colocate_basepairs_in_aes, run_cm_convert
 from .config import Config
 from .config import Binaries as bins
 from .run_ipknot import run_ipknot
@@ -44,7 +44,7 @@ def process_single_msa(msa_data):
     base_pairs = extract_base_pairs(bp_json, mapping)
     log(f"Base pairs filtered, count: {len(base_pairs)}")
 
-    aes_mapping = process_aes_df(aes_csv_path, mapping)
+    aes_mapping = process_aes_df(aes_csv_path, mapping, augment=True)
     log(f"AES mapping created, count: {len(aes_mapping)}")
     
     aes_bp_mapping = colocate_basepairs_in_aes(base_pairs, aes_mapping)
@@ -53,14 +53,14 @@ def process_single_msa(msa_data):
     aes_records = break_msa(fasta_path, aes_mapping, aes_bp_mapping)
     log(f"Records created for individual AES: {len(aes_records)}")
 
-    all_files = write_stockholm(aes_records, Config.RESULTS_DIR / alignment_name / "stockholms")
+    all_files = write_stockholm(aes_records, Config.DATA_DIR / alignment_name / "stockholms")
     log(f"Dot bracket added to stockholm")
 
     log(f"Constructing covariance model for {len(all_files)} AESs, please wait...")
     for sto_path in all_files: 
         cm_path  = run_cmbuild(sto_path)
-        hmm_path = run_hmmbuild(sto_path)
-        cm2_path = run_cmbuild(sto_path, bins.INF_115, postfix="115")
+        hmm_path = run_cm_convert(cm_path)
+        cm1_path = run_cm_convert(cm_path, flag='-1')
         
         if cm_path and hmm_path:
             log(f"CM & HMM created: {cm_path}")
@@ -70,6 +70,8 @@ def process_single_msa(msa_data):
             log(f"Failed to create CM file for {sto_path}", "error")
         else:
             log(f"Failed to create CM & HMM file for {sto_path}", "error")
+            
+    
 
 
 def process_single_msa_using_ipknot(msa_data):
