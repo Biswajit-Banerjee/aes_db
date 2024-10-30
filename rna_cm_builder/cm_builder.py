@@ -109,7 +109,7 @@ def colocate_basepairs_in_aes(base_pairs, aes_mapping):
                 local_start = indexes.index(start)
                 local_stop  = indexes.index(stop)
                 aes_bp_list.append([local_start, local_stop])
-                temp_bp.remove([start, stop])
+                # temp_bp.remove([start, stop])
         
         aes_bp_mapping[aes] = aes_bp_list
     print(f"Couldn't assign BPs: {len(temp_bp)}")

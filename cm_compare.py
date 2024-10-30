@@ -5,14 +5,14 @@ import re
 import pandas as pd
 from multiprocessing import Pool, cpu_count
 
-cm_dir = "/home/sumon/repos/aes_db/cm_builder_storage/results/bactRNAseP/covariance_models"
+cm_dir = "/home/sumon/repos/aes_db/data/all_cms"
 all_cm_files = os.listdir(cm_dir)
 
 def compare_models(args):
     name1, name2 = args
     cm1 = os.path.join(cm_dir, name1)
     cm2 = os.path.join(cm_dir, name2)
-    result = subprocess.run(["/home/sumon/repos/aes_db/cmcompare", cm1, cm2], 
+    result = subprocess.run(["/home/sumon/repos/aes_db/executables/cmcompare", cm1, cm2], 
                             capture_output=True, text=True)
     std_out = re.sub(" +", " ", result.stdout).split(" ")
     return (name1.replace(".cm", ""), name2.replace(".cm", ""), std_out[2])
@@ -35,4 +35,4 @@ if __name__ == "__main__":
 
     # Convert to DataFrame and save as CSV
     df = pd.DataFrame(comparision_dt)
-    df.to_csv("./comparision2.csv")
+    df.to_csv("./comparision.csv")
