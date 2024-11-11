@@ -161,14 +161,15 @@ def break_msa(fasta_path, aes_mapping, aes_bp_mapping):
     
     return aes_records
 
-def write_stockholm(aes_records, base_path):
+def write_stockholm(aes_records, base_path, ss_cons=True):
     stockholm_paths = []
     for aes, [records, dot_bracket] in aes_records.items():
         sto_path = os.path.join(base_path, f"aes_{aes}.stockholm")
         os.makedirs(os.path.dirname(sto_path), exist_ok=True)
         SeqIO.write(records, sto_path, "stockholm")
         
-        insert_line_to_file(sto_path, f"#=GC SS_cons {dot_bracket}", 1)
+        if ss_cons:
+            insert_line_to_file(sto_path, f"#=GC SS_cons {dot_bracket}", 1)
         stockholm_paths.append(sto_path)
         
     return stockholm_paths
